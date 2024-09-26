@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>유저 관리</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .filter-container {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .filter-row label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .filter-row button {
+            background-color: #ccc; /* 기본 회색 */
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .filter-row button.active {
+            background-color: #007bff; /* 파란색 */
+        }
+
+        .table td, .table th {
+            padding: 15px 12px;
+            vertical-align: middle;
+        }
+
+        .table {
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar d-flex flex-column p-3">
+        <h4  style="text-align: center;">Admin Page</h4>
+        <a href="user.html" class="nav-link active">유저</a>
+        <a href="order.html" class="nav-link">주문통합관리</a>
+        <a href="cs.html" class="nav-link">Buyer CS</a>
+        <a href="sales.html" class="nav-link">판매/결제</a>
+    </div>
+
+    <div class="content">
+        <div class="header">
+            <h1>유저 관리</h1>
+        </div>
+
+        <!-- 필터 섹션 -->
+        <div class="filter-container">
+            <!-- 구독 상태 필터 -->
+            <div class="filter-row">
+                <label for="subscription-status">구독 상태</label>
+                <div>
+                    <button type="button" id="filter-sub-all" class="active">전체</button>
+                    <button type="button" id="filter-sub-seller">셀러집사</button>
+                </div>
+            </div>
+
+            <!-- 사무실 현황 필터 -->
+            <div class="filter-row">
+                <label for="office-status">사무실 현황</label>
+                <div>
+                    <button type="button" id="filter-office-all" class="active">전체</button>
+                    <button type="button" id="filter-office-unused">미사용</button>
+                    <button type="button" id="filter-office-pending">계약대기</button>
+                    <button type="button" id="filter-office-done">계약완료</button>
+                </div>
+            </div>
+
+            <!-- 상세 검색 필터 -->
+            <div class="filter-row">
+                <label for="detailed-search">상세검색</label>
+                <div>
+                    <select id="filter-expiry">
+                        <option value="all">전체</option>
+                        <option value="14">D-14 이내</option>
+                        <option value="7">D-7 이내</option>
+                    </select>
+                    <input type="text" id="filter-store" placeholder="스토어명">
+                    <button type="button" id="search-button">검색</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 유저 리스트 테이블 -->
+        <div class="filter-container">
+        <table class="table table-bordered" id="user-table">
+            <thead>
+                <tr>
+                    <th>가입일시</th>
+                    <th>유저 계정 번호</th>
+                    <th>로그인 수단</th>
+                    <th>사무실 현황</th>
+                    <th>진행 현황</th>
+                    <th>최근 진행 일자</th>
+                    <th>스토어명</th>
+                    <th>연락처</th>
+                    <th>구독 패키지명</th>
+                    <th>구독 만료 기간</th>
+                    <th>상태값</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>24-05-14</td>
+                    <td>1001</td>
+                    <td>(기본)이메일 로그인</td>
+                    <td>미사용</td>
+                    <td>본인인증</td>
+                    <td>2024-09-12</td>
+                    <td>스토어A</td>
+                    <td>010-1234-5678</td>
+                    <td>셀러집사</td>
+                    <td data-expiry="2025-05-14">2025-05-14</td>
+                    <td>가입</td>
+                </tr>
+                <tr>
+                    <td>24-04-25</td>
+                    <td>1002</td>
+                    <td>(SNS)카카오</td>
+                    <td>계약대기</td>
+                    <td>통신판매업신고증확인</td>
+                    <td>2024-08-30</td>
+                    <td>스토어B</td>
+                    <td>010-2345-6789</td>
+                    <td>
+                        셀러집사<br>
+                        비상주사무실
+                    </td>
+                    <td data-expiry="2025-04-25">2025-04-25<br>2025-06-01</td>
+                    <td>가입</td>
+                </tr>
+                <!-- 추가 데이터들 -->
+                <tr>
+                    <td>24-06-02</td>
+                    <td>1003</td>
+                    <td>(기본)이메일 로그인</td>
+                    <td>계약완료</td>
+                    <td>네이버 연동 중</td>
+                    <td>2024-09-10</td>
+                    <td>스토어C</td>
+                    <td>010-3456-7890</td>
+                    <td>셀러집사</td>
+                    <td data-expiry="2025-06-02">2025-06-02</td>
+                    <td>가입</td>
+                </tr>
+                <tr>
+                    <td>24-07-20</td>
+                    <td>1004</td>
+                    <td>(SNS)구글</td>
+                    <td>계약완료</td>
+                    <td>G마켓 연동 중</td>
+                    <td>2024-09-15</td>
+                    <td>스토어D</td>
+                    <td>010-4567-8901</td>
+                    <td>비상주사무실</td>
+                    <td data-expiry="2025-07-20">2025-07-20</td>
+                    <td>가입</td>
+                </tr>
+                <tr>
+                    <td>24-03-14</td>
+                    <td>1005</td>
+                    <td>(SNS)네이버 로그인</td>
+                    <td>미사용</td>
+                    <td>본인인증</td>
+                    <td>2024-09-03</td>
+                    <td>스토어E</td>
+                    <td>010-5678-9012</td>
+                    <td>
+                        셀러집사<br>
+                        비상주사무실
+                    </td>
+                    <td data-expiry="2025-03-14">2025-03-14<br>2025-05-10</td>
+                    <td>가입</td>
+                </tr>
+                <tr>
+                    <td>24-08-25</td>
+                    <td>1006</td>
+                    <td>(SNS)카카오</td>
+                    <td>계약대기</td>
+                    <td>11번가 연동 중</td>
+                    <td>2024-09-13</td>
+                    <td>스토어F</td>
+                    <td>010-6789-0123</td>
+                    <td>비상주사무실</td>
+                    <td data-expiry="2025-08-25">2025-08-25</td>
+                    <td>가입</td>
+                </tr>
+                <tr>
+                    <td>24-05-10</td>
+                    <td>1007</td>
+                    <td>(기본)이메일 로그인</td>
+                    <td>미사용</td>
+                    <td>옥션 연동 중</td>
+                    <td>2024-09-10</td>
+                    <td>스토어G</td>
+                    <td>010-7890-1234</td>
+                    <td>
+                        셀러집사<br>
+                        비상주사무실
+                    </td>
+                    <td data-expiry="2025-05-10">2025-05-10<br>2025-08-20</td>
+                    <td>가입</td>
+                </tr>
+                <tr>
+                    <td>24-04-18</td>
+                    <td>1008</td>
+                    <td>(SNS)구글</td>
+                    <td>계약완료</td>
+                    <td>인터파크 연동 중</td>
+                    <td>2024-09-08</td>
+                    <td>스토어H</td>
+                    <td>010-8901-2345</td>
+                    <td>비상주사무실</td>
+                    <td data-expiry="2025-04-18">2025-04-18</td>
+                    <td>가입</td>
+                </tr>
+                <tr>
+                    <td>24-02-28</td>
+                    <td>1009</td>
+                    <td>(기본)이메일 로그인</td>
+                    <td>계약대기</td>
+                    <td>본인인증</td>
+                    <td>2024-09-01</td>
+                    <td>스토어I</td>
+                    <td>010-9012-3456</td>
+                    <td>셀러집사</td>
+                    <td data-expiry="2025-02-28">2025-02-28</td>
+                    <td>가입</td>
+                </tr>
+                <tr>
+                    <td>24-06-15</td>
+                    <td>1010</td>
+                    <td>(SNS)네이버 로그인</td>
+                    <td>계약완료</td>
+                    <td>사업자등록증 확인</td>
+                    <td>2024-09-05</td>
+                    <td>스토어J</td>
+                    <td>010-0123-4567</td>
+                    <td>비상주사무실</td>
+                    <td data-expiry="2025-06-15">2025-06-15</td>
+                    <td>가입</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+    <script>
+        // D-day 계산 함수
+        function calculateDDay(expiryDateStr) {
+            const expiryDate = new Date(expiryDateStr);
+            const today = new Date();
+            const timeDiff = expiryDate.getTime() - today.getTime();
+            const dDay = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // 일 수로 변환
+            return dDay > 0 ? `(D-${dDay})` : `(만료됨)`;
+        }
+
+        // D-day 자동 계산 및 적용
+        function updateDDays() {
+            const expiryCells = document.querySelectorAll('td[data-expiry]');
+            expiryCells.forEach(cell => {
+                const expiryDates = cell.innerHTML.split('<br>');
+                const dDayResults = expiryDates.map(date => {
+                    const trimmedDate = date.trim();
+                    const dDay = calculateDDay(trimmedDate);
+                    return `${trimmedDate}<br>${dDay}`;
+                });
+                cell.innerHTML = dDayResults.join('<br>');
+            });
+        }
+
+        // 필터 변수
+        let filterSubscription = 'all';
+        let filterOffice = 'all';
+        let filterExpiry = 'all';
+        let filterStoreName = '';
+
+        // 필터 상태에 따라 버튼 색상 변경
+        function updateFilterButtonStyles() {
+            document.querySelectorAll('.filter-row button').forEach(button => {
+                button.classList.remove('active'); // 모든 버튼을 기본 회색으로
+            });
+
+            if (filterSubscription === 'all') {
+                document.getElementById('filter-sub-all').classList.add('active');
+            } else {
+                document.getElementById('filter-sub-seller').classList.add('active');
+            }
+
+            if (filterOffice === 'all') {
+                document.getElementById('filter-office-all').classList.add('active');
+            } else if (filterOffice === '미사용') {
+                document.getElementById('filter-office-unused').classList.add('active');
+            } else if (filterOffice === '계약대기') {
+                document.getElementById('filter-office-pending').classList.add('active');
+            } else if (filterOffice === '계약완료') {
+                document.getElementById('filter-office-done').classList.add('active');
+            }
+        }
+
+        // 필터 버튼 클릭 이벤트
+        document.getElementById('filter-sub-all').addEventListener('click', function() {
+            filterSubscription = 'all';
+            updateFilterButtonStyles();
+            applyFilters();
+        });
+
+        document.getElementById('filter-sub-seller').addEventListener('click', function() {
+            filterSubscription = '셀러집사';
+            updateFilterButtonStyles();
+            applyFilters();
+        });
+
+        document.getElementById('filter-office-all').addEventListener('click', function() {
+            filterOffice = 'all';
+            updateFilterButtonStyles();
+            applyFilters();
+        });
+
+        document.getElementById('filter-office-unused').addEventListener('click', function() {
+            filterOffice = '미사용';
+            updateFilterButtonStyles();
+            applyFilters();
+        });
+
+        document.getElementById('filter-office-pending').addEventListener('click', function() {
+            filterOffice = '계약대기';
+            updateFilterButtonStyles();
+            applyFilters();
+        });
+
+        document.getElementById('filter-office-done').addEventListener('click', function() {
+            filterOffice = '계약완료';
+            updateFilterButtonStyles();
+            applyFilters();
+        });
+
+        document.getElementById('search-button').addEventListener('click', function() {
+            filterExpiry = document.getElementById('filter-expiry').value;
+            filterStoreName = document.getElementById('filter-store').value.trim();
+            applyFilters();
+        });
+
+        // 필터 적용 함수
+        function applyFilters() {
+            const rows = document.querySelectorAll('#user-table tbody tr');
+            rows.forEach(row => {
+                const subscription = row.cells[8].textContent.trim();
+                const office = row.cells[3].textContent.trim();
+                const storeName = row.cells[6].textContent.trim();
+                const expiryDateCell = row.cells[9].textContent.trim(); // 구독 만료 날짜 및 D-day 포함
+
+                let show = true;
+
+                // 구독 상태 필터
+                if (filterSubscription !== 'all' && !subscription.includes(filterSubscription)) {
+                    show = false;
+                }
+
+                // 사무실 현황 필터
+                if (filterOffice !== 'all' && office !== filterOffice) {
+                    show = false;
+                }
+
+                // 스토어명 필터
+                if (filterStoreName !== '' && !storeName.includes(filterStoreName)) {
+                    show = false;
+                }
+
+                // 구독 만료 기간 필터 (14일 전, 7일 전)
+                if (filterExpiry !== 'all') {
+                    const dDayMatch = expiryDateCell.match(/\(D-(\d+)\)/);
+                    if (dDayMatch) {
+                        const dDayNumber = parseInt(dDayMatch[1], 10);
+
+                        if (filterExpiry === '14' && dDayNumber > 14) {
+                            show = false;
+                        }
+                        if (filterExpiry === '7' && dDayNumber > 7) {
+                            show = false;
+                        }
+                    }
+                }
+
+                // 필터에 맞지 않으면 숨김
+                row.style.display = show ? '' : 'none';
+            });
+        }
+
+        // 페이지 로드 시 D-day 업데이트 및 필터 초기화
+        window.onload = function() {
+            updateDDays(); // D-day 자동 계산
+            filterSubscription = 'all';
+            filterOffice = 'all';
+            filterExpiry = 'all';
+            filterStoreName = '';
+            document.getElementById('filter-expiry').value = 'all';
+            document.getElementById('filter-store').value = '';
+            updateFilterButtonStyles();
+            applyFilters();
+        };
+    </script>
+
+</body>
+</html>

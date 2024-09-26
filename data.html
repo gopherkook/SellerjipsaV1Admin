@@ -1,0 +1,280 @@
+<!-- 주문 리스트 테이블 -->
+        <h2>주문 리스트</h2>
+        <table class="table table-bordered" id="order-table">
+            <thead>
+                <tr>
+                    <th>Seller 결제 상태</th>
+                    <th>Seller 결제 요청 일시</th>
+                    <th>Seller 결제 요청</th>
+                    <th>셀러집사 주문상태</th>
+                    <th>주문상태</th>
+                    <th>주문상태변경일시</th>
+                    <th>주문타입변경</th>
+                    <th>주문타입변경일시</th>
+                    <th>클레임타입</th>
+                    <th>클레임상태</th>
+                    <th>취소사유</th>
+                    <th>반품사유</th>
+                    <th>클레임접수일시</th>
+                    <th>반품/교환 설명</th>
+                    <th>Seller ID</th>
+                    <th>쇼핑몰</th>
+                    <th>셀러집사 주문고유코드</th>
+                    <th>쇼핑몰주문번호</th>
+                    <th>쇼핑몰상품주문번호</th>
+                    <th>배송번호</th>
+                    <th>Buyer 주문일(약식)</th>
+                    <th>Buyer 주문일시</th>
+                    <th>Buyer 결제일시</th>
+                    <th>구매자</th>
+                    <th>수령자</th>
+                    <th>개인통관고유부호</th>
+                    <th>통관부호일치여부</th>
+                    <th>개인통관부호검사</th>
+                    <th>수령자전화번호</th>
+                    <th>수령자휴대전화</th>
+                    <th>구매자전화</th>
+                    <th>구매자휴대전화</th>
+                    <th>우편번호</th>
+                    <th>주소</th>
+                    <th>배송메모</th>
+                    <th>Buyer 결제수단</th>
+                    <th>배송방법</th>
+                    <th>배송구분</th>
+                    <th>도서산간</th>
+                    <th>발송예정일</th>
+                    <th>발송일시</th>
+                    <th>송장번호입력일시</th>
+                    <th>송장번호전송일시</th>
+                    <th>택배사</th>
+                    <th>송장번호</th>
+                    <th>송장 전송</th>
+                    <th>쇼핑몰 상품코드</th>
+                    <th>쇼핑몰 링크</th>
+                    <th>셀러집사 상품코드</th>
+                    <th>셀러집사 상품옵션코드</th>
+                    <th>상품명</th>
+                    <th>옵션명</th>
+                    <th>추가구성명</th>
+                    <th>추가구성수량</th>
+                    <th>수량</th>
+                    <th>단가(정가)</th>
+                    <th>옵션추가금액</th>
+                    <th>배송비</th>
+                    <th>총주문금액</th>
+                    <th>할인금액</th>
+                    <th>실결제금액(판매가)</th>
+                    <th>정산예정금액</th>
+                    <th>정산추가정보</th>
+                    <th>상품(옵션) 이미지 url</th>
+                    <th>타오바오 결제일</th>
+                    <th>타오바오 주문번호</th>
+                    <th>타오바오 송장번호</th>
+                    <th>타오바오 주문금액(위안)</th>
+                    <th>타오바오 주문금액(원)</th>
+                    <th>인터로지스 주문번호</th>
+                    <th>인터로지스 신청일시</th>
+                    <th>인터로지스 배송비(1)</th>
+                    <th>인터로지스 배송비(2)</th>
+                    <th>인터로지스 배송비(3)</th>
+                    <th>Seller to Gopher 금액</th>
+                    <th>Seller 결제일(약식)</th>
+                    <th>Seller 결제일시</th>
+                    <th>Seller 결제영수증</th>
+                    <th>고퍼 예상 마진</th>
+                    <th>고퍼 예상 마진률</th>
+                    <th>고퍼 최종 마진</th>
+                    <th>고퍼 최종 마진률</th>
+                    <th>인터로지스 반품 전달건</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 예시 데이터 -->
+                <tr>
+                    <td>결제 완료</td>
+                    <td>2024-09-10 14:30</td>
+                    <td>100000</td>
+                    <td>발송 준비 중</td>
+                    <td>배송 중</td>
+                    <td>2024-09-11 10:00</td>
+                    <td>정상 주문</td>
+                    <td>2024-09-11 10:00</td>
+                    <td>환불</td>
+                    <td>처리 중</td>
+                    <td>상품 불량</td>
+                    <td>단순 변심</td>
+                    <td>2024-09-12 09:00</td>
+                    <td>상품이 잘못 배송됨</td>
+                    <td>seller123</td>
+                    <td>네이버</td>
+                    <td>100000001</td>
+                    <td>30000001</td>
+                    <td>40000001</td>
+                    <td>50000001</td>
+                    <td>2024-09-10</td>
+                    <td>2024-09-10 14:00</td>
+                    <td>2024-09-10 14:30</td>
+                    <td>홍길동</td>
+                    <td>김철수</td>
+                    <td>P1234567890</td>
+                    <td>Y</td>
+                    <td>검사 완료</td>
+                    <td>010-1234-5678</td>
+                    <td>010-9876-5432</td>
+                    <td>010-1111-2222</td>
+                    <td>010-3333-4444</td>
+                    <td>12345</td>
+                    <td>서울시 중구</td>
+                    <td>배송 전 연락 바랍니다.</td>
+                    <td>카드 결제</td>
+                    <td>택배</td>
+                    <td>일반 배송</td>
+                    <td>해당 없음</td>
+                    <td>2024-09-14</td>
+                    <td>2024-09-12 15:00</td>
+                    <td>2024-09-12 16:00</td>
+                    <td>2024-09-12 16:30</td>
+                    <td>택배사 A</td>
+                    <td>INVOICE12345</td>
+                    <td>송장 전송 완료</td>
+                    <td>ITEMCODE123</td>
+                    <td><a href="https://mall.com/item/12345">상품 링크</a></td>
+                    <td>GPHR_ITEM123</td>
+                    <td>GPHR_OPTION123</td>
+                    <td>상품A</td>
+                    <td>옵션A</td>
+                    <td>추가 구성품A</td>
+                    <td>1</td>
+                    <td>100,000원</td>
+                    <td>0원</td>
+                    <td>2,500원</td>
+                    <td>102,500원</td>
+                    <td>5,000원</td>
+                    <td>97,500원</td>
+                    <td>90,000원</td>
+                    <td>정산 완료</td>
+                    <td>https://image-url.com/item123.jpg</td>
+                    <td>2024-09-10</td>
+                    <td>TB_ORDER123</td>
+                    <td>TB_TRACKING123</td>
+                    <td>500위안</td>
+                    <td>80,000원</td>
+                    <td>INTLOG123</td>
+                    <td>2024-09-11 11:00</td>
+                    <td>5,000원</td>
+                    <td>3,000원</td>
+                    <td>0원</td>
+                    <td>1,000원</td>
+                    <td>2024-09-14</td>
+                    <td>2024-09-14 14:00</td>
+                    <td>RECEIPT_123</td>
+                    <td>10,000원</td>
+                    <td>10%</td>
+                    <td>9,000원</td>
+                    <td>9%</td>
+                    <td>반품 완료</td>
+                </tr>
+            </tbody>
+        </table>
+
+
+
+         <!-- 열람 선택 섹션 -->
+         <div class="filter-row">
+            <label for="view-options">열람 선택</label>
+            <div class="toggle-buttons">
+                <!-- 모든 열에 대한 on/off 토글 버튼 생성 -->
+                <button type="button" data-column="1" class="toggle-button">Seller 결제 상태</button>
+                <button type="button" data-column="2" class="toggle-button">Seller 결제 요청 일시</button>
+                <button type="button" data-column="3" class="toggle-button">Seller 결제 요청</button>
+                <button type="button" data-column="4" class="toggle-button">셀러집사 주문상태</button>
+                <button type="button" data-column="5" class="toggle-button">주문상태</button>
+                <button type="button" data-column="6" class="toggle-button">주문상태변경일시</button>
+                <button type="button" data-column="7" class="toggle-button">주문타입변경</button>
+                <button type="button" data-column="8" class="toggle-button">주문타입변경일시</button>
+                <button type="button" data-column="9" class="toggle-button">클레임타입</button>
+                <button type="button" data-column="10" class="toggle-button">클레임상태</button>
+                <button type="button" data-column="11" class="toggle-button">취소사유</button>
+                <button type="button" data-column="12" class="toggle-button">반품사유</button>
+                <button type="button" data-column="13" class="toggle-button">클레임접수일시</button>
+                <button type="button" data-column="14" class="toggle-button">반품/교환 설명</button>
+                <button type="button" data-column="15" class="toggle-button">Seller ID</button>
+                <button type="button" data-column="16" class="toggle-button">쇼핑몰</button>
+                <button type="button" data-column="17" class="toggle-button">셀러집사 주문고유코드</button>
+                <button type="button" data-column="18" class="toggle-button">쇼핑몰주문번호</button>
+                <button type="button" data-column="19" class="toggle-button">쇼핑몰상품주문번호</button>
+                <button type="button" data-column="20" class="toggle-button">배송번호</button>
+                <button type="button" data-column="21" class="toggle-button">Buyer 주문일(약식)</button>
+                <button type="button" data-column="22" class="toggle-button">Buyer 주문일시</button>
+                <button type="button" data-column="23" class="toggle-button">Buyer 결제일시</button>
+                <button type="button" data-column="24" class="toggle-button">구매자</button>
+                <button type="button" data-column="25" class="toggle-button">수령자</button>
+                <button type="button" data-column="26" class="toggle-button">개인통관고유부호</button>
+                <button type="button" data-column="27" class="toggle-button">통관부호일치여부</button>
+                <button type="button" data-column="28" class="toggle-button">개인통관부호검사</button>
+                <button type="button" data-column="29" class="toggle-button">수령자전화번호</button>
+                <button type="button" data-column="30" class="toggle-button">수령자휴대전화</button>
+                <button type="button" data-column="31" class="toggle-button">구매자전화</button>
+                <button type="button" data-column="32" class="toggle-button">구매자휴대전화</button>
+                <button type="button" data-column="33" class="toggle-button">우편번호</button>
+                <button type="button" data-column="34" class="toggle-button">주소</button>
+                <button type="button" data-column="35" class="toggle-button">배송메모</button>
+                <button type="button" data-column="36" class="toggle-button">Buyer 결제수단</button>
+                <button type="button" data-column="37" class="toggle-button">배송방법</button>
+                <button type="button" data-column="38" class="toggle-button">배송구분</button>
+                <button type="button" data-column="39" class="toggle-button">도서산간</button>
+                <button type="button" data-column="40" class="toggle-button">발송예정일</button>
+                <button type="button" data-column="41" class="toggle-button">발송일시</button>
+                <button type="button" data-column="42" class="toggle-button">송장번호입력일시</button>
+                <button type="button" data-column="43" class="toggle-button">송장번호전송일시</button>
+                <button type="button" data-column="44" class="toggle-button">택배사</button>
+                <button type="button" data-column="45" class="toggle-button">송장번호</button>
+                <button type="button" data-column="46" class="toggle-button">송장 전송</button>
+                <button type="button" data-column="47" class="toggle-button">쇼핑몰 상품코드</button>
+                <button type="button" data-column="48" class="toggle-button">쇼핑몰 링크</button>
+                <button type="button" data-column="49" class="toggle-button">셀러집사 상품코드</button>
+                <button type="button" data-column="50" class="toggle-button">셀러집사 상품옵션코드</button>
+                <button type="button" data-column="51" class="toggle-button">상품명</button>
+                <button type="button" data-column="52" class="toggle-button">옵션명</button>
+                <button type="button" data-column="53" class="toggle-button">추가구성명</button>
+                <button type="button" data-column="54" class="toggle-button">추가구성수량</button>
+                <button type="button" data-column="55" class="toggle-button">수량</button>
+                <button type="button" data-column="56" class="toggle-button">단가(정가)</button>
+                <button type="button" data-column="57" class="toggle-button">옵션추가금액</button>
+                <button type="button" data-column="58" class="toggle-button">배송비</button>
+                <button type="button" data-column="59" class="toggle-button">총주문금액</button>
+                <button type="button" data-column="60" class="toggle-button">할인금액</button>
+                <button type="button" data-column="61" class="toggle-button">실결제금액(판매가)</button>
+                <button type="button" data-column="62" class="toggle-button">정산예정금액</button>
+                <button type="button" data-column="63" class="toggle-button">정산추가정보</button>
+                <button type="button" data-column="64" class="toggle-button">상품(옵션) 이미지 url</button>
+                <button type="button" data-column="65" class="toggle-button">타오바오 결제일</button>
+                <button type="button" data-column="66" class="toggle-button">타오바오 주문번호</button>
+                <button type="button" data-column="67" class="toggle-button">타오바오 송장번호</button>
+                <button type="button" data-column="68" class="toggle-button">타오바오 주문금액(위안)</button>
+                <button type="button" data-column="69" class="toggle-button">타오바오 주문금액(원)</button>
+                <button type="button" data-column="70" class="toggle-button">인터로지스 주문번호</button>
+                <button type="button" data-column="71" class="toggle-button">인터로지스 신청일시</button>
+                <button type="button" data-column="72" class="toggle-button">인터로지스 배송비(1)</button>
+                <button type="button" data-column="73" class="toggle-button">인터로지스 배송비(2)</button>
+                <button type="button" data-column="74" class="toggle-button">인터로지스 배송비(3)</button>
+                <button type="button" data-column="75" class="toggle-button">Seller to Gopher 금액</button>
+                <button type="button" data-column="76" class="toggle-button">Seller 결제일(약식)</button>
+                <button type="button" data-column="77" class="toggle-button">Seller 결제일시</button>
+                <button type="button" data-column="78" class="toggle-button">Seller 결제영수증</button>
+                <button type="button" data-column="79" class="toggle-button">고퍼 예상 마진</button>
+                <button type="button" data-column="80" class="toggle-button">고퍼 예상 마진률</button>
+                <button type="button" data-column="81" class="toggle-button">고퍼 최종 마진</button>
+                <button type="button" data-column="82" class="toggle-button">고퍼 최종 마진률</button>
+                <button type="button" data-column="83" class="toggle-button">인터로지스 반품 전달건</button>
+            </div>
+            <!-- 열고 닫기 버튼 -->
+            <button class="toggle-more-btn" id="toggle-more-btn">
+                더보기 <span>&#9660;</span>
+            </button>
+        </div>
+    </div>
+
+
+
+

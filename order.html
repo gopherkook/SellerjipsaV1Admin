@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 통합 관리</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 스타일 유지 */
+        .filter-container {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            width: 100%;
+            box-sizing: border-box;
+        }
+      
+        .filter-row {
+            display: flex; 
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .filter-row label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .filter-row button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        .table td, .table th {
+            padding: 10px;
+            vertical-align: middle;
+        }
+        .table {
+            border-collapse: collapse;
+            border-spacing: 0 10px;
+            width: 100%;
+            font-size: 12px;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+        }
+        /* 탭 스타일 */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tabs button {
+            flex: 1;
+            padding: 10px;
+            background-color: #ccc;
+            border: 1px solid #ddd;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+        }
+        .tabs button.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        .action-buttons button {
+            margin-left: 10px;
+        }
+
+        /* 열람 선택 토글 버튼 스타일 */
+        .toggle-buttons {
+            max-height: 150px; /* 기본 접힌 상태에서 보이는 높이 설정 */
+            overflow: hidden;  /* 기본 접힘 */
+            transition: max-height 0.3s ease;
+        }
+        .toggle-buttons button {
+            margin: 5px;
+            background-color: #ccc;
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .toggle-buttons button.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .toggle-buttons button.inactive {
+            background-color: #ccc;
+            color: #333;
+        }
+
+        /* 열기/닫기 버튼 스타일 */
+        .toggle-more-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #007bff;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .toggle-more-btn span {
+            font-size: 16px;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+        .toggle-more-btn span.rotated {
+            transform: rotate(180deg);
+        }
+
+        .toggle-buttons.expanded {
+            max-height: none; /* 더보기 버튼을 누르면 제한 해제 */
+        }
+        
+         /* 전체 선택/해제 버튼 스타일 */
+         .select-toggle-row {
+            display: flex;
+            justify-content: flex-end; /* 오른쪽에 정렬 */
+        }
+
+        .select-toggle-row button {
+            margin-left: 5px;
+            padding: 5px 10px; /* 크기를 작게 */
+            border-radius: 3px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            background-color: #ccc;
+            color: #fff;
+        }
+
+        .select-toggle-row button.active {
+            background-color: #007bff;
+        }
+
+        .select-toggle-row button.inactive {
+            background-color: #ccc;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar d-flex flex-column p-3">
+        <h4  style="text-align: center;">Admin Page</h4>
+        <a href="user.html" class="nav-link">유저</a>
+        <a href="order.html" class="nav-link active">주문통합관리</a>
+        <a href="cs.html" class="nav-link">Buyer CS</a>
+        <a href="sales.html" class="nav-link">판매/결제</a>
+    </div>
+
+    <div class="content">
+        <!-- Sticky Header -->
+        <div class="header">
+            <h1>주문 통합 관리</h1>
+        </div>
+
+        <!-- 탭 섹션 -->
+        <div class="tabs">
+            <button id="tab-1" class="active">1차 주문관리</button>
+            <button id="tab-2">2차 주문관리</button>
+        </div>
+
+        <!-- 필터 섹션 -->
+        <div class="filter-container sticky-header">
+            <div class="filter-row">
+                <label for="date-range">날짜 범위 (Seller 결제 요청 일시 기준)</label>
+                <div>
+                    <input type="date" id="start-date"> -
+                    <input type="date" id="end-date">
+                    <button type="button" id="search-button">검색</button>
+                </div>
+            </div> 
+
+            <!-- 열람 선택 섹션 -->
+            <div class="filter-row">
+                <label for="view-options">열람 선택</label>
+                <div class="toggle-buttons">
+                    <!-- 모든 열에 대한 on/off 토글 버튼 생성 -->
+                    <button type="button" data-column="1" class="toggle-button">Seller 결제 상태</button>
+                <button type="button" data-column="2" class="toggle-button">Seller 결제 요청 일시</button>
+                <button type="button" data-column="3" class="toggle-button">Seller 결제 요청</button>
+                <button type="button" data-column="4" class="toggle-button">셀러집사 주문상태</button>
+                <button type="button" data-column="5" class="toggle-button">주문상태</button>
+                <button type="button" data-column="6" class="toggle-button">주문상태변경일시</button>
+                <button type="button" data-column="7" class="toggle-button">주문타입변경</button>
+                <button type="button" data-column="8" class="toggle-button">주문타입변경일시</button>
+                <button type="button" data-column="9" class="toggle-button">클레임타입</button>
+                <button type="button" data-column="10" class="toggle-button">클레임상태</button>
+                <button type="button" data-column="11" class="toggle-button">취소사유</button>
+                <button type="button" data-column="12" class="toggle-button">반품사유</button>
+                <button type="button" data-column="13" class="toggle-button">클레임접수일시</button>
+                <button type="button" data-column="14" class="toggle-button">반품/교환 설명</button>
+                <button type="button" data-column="15" class="toggle-button">Seller ID</button>
+                <button type="button" data-column="16" class="toggle-button">쇼핑몰</button>
+                <button type="button" data-column="17" class="toggle-button">셀러집사 주문고유코드</button>
+                <button type="button" data-column="18" class="toggle-button">쇼핑몰주문번호</button>
+                <button type="button" data-column="19" class="toggle-button">쇼핑몰상품주문번호</button>
+                <button type="button" data-column="20" class="toggle-button">배송번호</button>
+                <button type="button" data-column="21" class="toggle-button">Buyer 주문일(약식)</button>
+                <button type="button" data-column="22" class="toggle-button">Buyer 주문일시</button>
+                <button type="button" data-column="23" class="toggle-button">Buyer 결제일시</button>
+                <button type="button" data-column="24" class="toggle-button">구매자</button>
+                <button type="button" data-column="25" class="toggle-button">수령자</button>
+                <button type="button" data-column="26" class="toggle-button">개인통관고유부호</button>
+                <button type="button" data-column="27" class="toggle-button">통관부호일치여부</button>
+                <button type="button" data-column="28" class="toggle-button">개인통관부호검사</button>
+                <button type="button" data-column="29" class="toggle-button">수령자전화번호</button>
+                <button type="button" data-column="30" class="toggle-button">수령자휴대전화</button>
+                <button type="button" data-column="31" class="toggle-button">구매자전화</button>
+                <button type="button" data-column="32" class="toggle-button">구매자휴대전화</button>
+                <button type="button" data-column="33" class="toggle-button">우편번호</button>
+                <button type="button" data-column="34" class="toggle-button">주소</button>
+                <button type="button" data-column="35" class="toggle-button">배송메모</button>
+                <button type="button" data-column="36" class="toggle-button">Buyer 결제수단</button>
+                <button type="button" data-column="37" class="toggle-button">배송방법</button>
+                <button type="button" data-column="38" class="toggle-button">배송구분</button>
+                <button type="button" data-column="39" class="toggle-button">도서산간</button>
+                <button type="button" data-column="40" class="toggle-button">발송예정일</button>
+                <button type="button" data-column="41" class="toggle-button">발송일시</button>
+                <button type="button" data-column="42" class="toggle-button">송장번호입력일시</button>
+                <button type="button" data-column="43" class="toggle-button">송장번호전송일시</button>
+                <button type="button" data-column="44" class="toggle-button">택배사</button>
+                <button type="button" data-column="45" class="toggle-button">송장번호</button>
+                <button type="button" data-column="46" class="toggle-button">송장 전송</button>
+                <button type="button" data-column="47" class="toggle-button">쇼핑몰 상품코드</button>
+                <button type="button" data-column="48" class="toggle-button">쇼핑몰 링크</button>
+                <button type="button" data-column="49" class="toggle-button">셀러집사 상품코드</button>
+                <button type="button" data-column="50" class="toggle-button">셀러집사 상품옵션코드</button>
+                <button type="button" data-column="51" class="toggle-button">상품명</button>
+                <button type="button" data-column="52" class="toggle-button">옵션명</button>
+                <button type="button" data-column="53" class="toggle-button">추가구성명</button>
+                <button type="button" data-column="54" class="toggle-button">추가구성수량</button>
+                <button type="button" data-column="55" class="toggle-button">수량</button>
+                <button type="button" data-column="56" class="toggle-button">단가(정가)</button>
+                <button type="button" data-column="57" class="toggle-button">옵션추가금액</button>
+                <button type="button" data-column="58" class="toggle-button">배송비</button>
+                <button type="button" data-column="59" class="toggle-button">총주문금액</button>
+                <button type="button" data-column="60" class="toggle-button">할인금액</button>
+                <button type="button" data-column="61" class="toggle-button">실결제금액(판매가)</button>
+                <button type="button" data-column="62" class="toggle-button">정산예정금액</button>
+                <button type="button" data-column="63" class="toggle-button">정산추가정보</button>
+                <button type="button" data-column="64" class="toggle-button">상품(옵션) 이미지 url</button>
+                <button type="button" data-column="65" class="toggle-button">타오바오 결제일</button>
+                <button type="button" data-column="66" class="toggle-button">타오바오 주문번호</button>
+                <button type="button" data-column="67" class="toggle-button">타오바오 송장번호</button>
+                <button type="button" data-column="68" class="toggle-button">타오바오 주문금액(위안)</button>
+                <button type="button" data-column="69" class="toggle-button">타오바오 주문금액(원)</button>
+                <button type="button" data-column="70" class="toggle-button">인터로지스 주문번호</button>
+                <button type="button" data-column="71" class="toggle-button">인터로지스 신청일시</button>
+                <button type="button" data-column="72" class="toggle-button">인터로지스 배송비(1)</button>
+                <button type="button" data-column="73" class="toggle-button">인터로지스 배송비(2)</button>
+                <button type="button" data-column="74" class="toggle-button">인터로지스 배송비(3)</button>
+                <button type="button" data-column="75" class="toggle-button">Seller to Gopher 금액</button>
+                <button type="button" data-column="76" class="toggle-button">Seller 결제일(약식)</button>
+                <button type="button" data-column="77" class="toggle-button">Seller 결제일시</button>
+                <button type="button" data-column="78" class="toggle-button">Seller 결제영수증</button>
+                <button type="button" data-column="79" class="toggle-button">고퍼 예상 마진</button>
+                <button type="button" data-column="80" class="toggle-button">고퍼 예상 마진률</button>
+                <button type="button" data-column="81" class="toggle-button">고퍼 최종 마진</button>
+                <button type="button" data-column="82" class="toggle-button">고퍼 최종 마진률</button>
+                <button type="button" data-column="83" class="toggle-button">인터로지스 반품 전달건</button>
+                    <!-- 나머지 버튼 생략 -->
+                </div>
+                 <!-- 전체 선택/해제 버튼 -->
+                 <div class="select-toggle-row">
+                    <button type="button" id="select-all-toggle" class="inactive">전체 선택</button>
+                    <button type="button" id="deselect-all-toggle" class="inactive">전체 선택 해제</button>
+                </div>
+                <button class="toggle-more-btn" id="toggle-more-btn">
+                    더보기 <span>&#9660;</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 액션 버튼들 -->
+        <div class="action-buttons">
+            <button type="button" id="notify-button">알림 발송</button>
+            <button type="button" id="move-button">2차 넘기기</button>
+            <button type="button" id="delete-button">주문 취소</button>
+        </div>
+
+        <!-- 1차 주문 테이블 -->
+        <div class="filter-container">
+        <div id="tab1-content" class="table-container">
+            <table class="table table-bordered" id="order-table-1">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="select-all-1"></th> <!-- 체크박스 열 -->
+                        <th>Seller 결제 상태</th>
+                        <th>Seller 결제 요청 일시</th>
+                        <th>Seller 결제 요청</th>
+                        <th>셀러집사 주문상태</th>
+                        <th>주문상태</th>
+                        <th>주문상태변경일시</th>
+                        <th>주문타입변경</th>
+                        <th>주문타입변경일시</th>
+                        <th>클레임타입</th>
+                        <th>클레임상태</th>
+                        <th>취소사유</th>
+                        <th>반품사유</th>
+                        <th>클레임접수일시</th>
+                        <th>반품/교환 설명</th>
+                        <th>Seller ID</th>
+                        <th>쇼핑몰</th>
+                        <th>셀러집사 주문고유코드</th>
+                        <th>쇼핑몰주문번호</th>
+                        <th>쇼핑몰상품주문번호</th>
+                        <th>배송번호</th>
+                        <th>Buyer 주문일(약식)</th>
+                        <th>Buyer 주문일시</th>
+                        <th>Buyer 결제일시</th>
+                        <th>구매자</th>
+                        <th>수령자</th>
+                        <th>개인통관고유부호</th>
+                        <th>통관부호일치여부</th>
+                        <th>개인통관부호검사</th>
+                        <th>수령자전화번호</th>
+                        <th>수령자휴대전화</th>
+                        <th>구매자전화</th>
+                        <th>구매자휴대전화</th>
+                        <th>우편번호</th>
+                        <th>주소</th>
+                        <th>배송메모</th>
+                        <th>Buyer 결제수단</th>
+                        <th>배송방법</th>
+                        <th>배송구분</th>
+                        <th>도서산간</th>
+                        <th>발송예정일</th>
+                        <th>발송일시</th>
+                        <th>송장번호입력일시</th>
+                        <th>송장번호전송일시</th>
+                        <th>택배사</th>
+                        <th>송장번호</th>
+                        <th>송장 전송</th>
+                        <th>쇼핑몰 상품코드</th>
+                        <th>쇼핑몰 링크</th>
+                        <th>셀러집사 상품코드</th>
+                        <th>셀러집사 상품옵션코드</th>
+                        <th>상품명</th>
+                        <th>옵션명</th>
+                        <th>추가구성명</th>
+                        <th>추가구성수량</th>
+                        <th>수량</th>
+                        <th>단가(정가)</th>
+                        <th>옵션추가금액</th>
+                        <th>배송비</th>
+                        <th>총주문금액</th>
+                        <th>할인금액</th>
+                        <th>실결제금액(판매가)</th>
+                        <th>정산예정금액</th>
+                        <th>정산추가정보</th>
+                        <th>상품(옵션) 이미지 url</th>
+                        <th>타오바오 결제일</th>
+                        <th>타오바오 주문번호</th>
+                        <th>타오바오 송장번호</th>
+                        <th>타오바오 주문금액(위안)</th>
+                        <th>타오바오 주문금액(원)</th>
+                        <th>인터로지스 주문번호</th>
+                        <th>인터로지스 신청일시</th>
+                        <th>인터로지스 배송비(1)</th>
+                        <th>인터로지스 배송비(2)</th>
+                        <th>인터로지스 배송비(3)</th>
+                        <th>Seller to Gopher 금액</th>
+                        <th>Seller 결제일(약식)</th>
+                        <th>Seller 결제일시</th>
+                        <th>Seller 결제영수증</th>
+                        <th>고퍼 예상 마진</th>
+                        <th>고퍼 예상 마진률</th>
+                        <th>고퍼 최종 마진</th>
+                        <th>고퍼 최종 마진률</th>
+                        <th>인터로지스 반품 전달건</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 1차 예시 데이터 -->
+                    <tr>
+                        <td><input type="checkbox" class="select-row-1"></td> <!-- 체크박스 열 -->
+                        <td>결제 완료</td>
+                        <td>2024-09-10</td>
+                        <td>100000</td>
+                        <td>발송 준비 중</td>
+                        <td>배송 중</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="select-row-1"></td> <!-- 체크박스 열 -->
+                        <td>결제 대기</td>
+                        <td>2024-09-09</td>
+                        <td>500000</td>
+                        <td>결제 대기</td>
+                        <td>결제 완료</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="select-row-1"></td> <!-- 체크박스 열 -->
+                        <td>결제 완료</td>
+                        <td>2024-09-08</td>
+                        <td>200000</td>
+                        <td>배송 완료</td>
+                        <td>배송 완료</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <!-- 2차 주문 테이블 -->
+        <div id="tab2-content" class="table-container" style="display:none;">
+            <table class="table table-bordered" id="order-table-2">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="select-all-2"></th> <!-- 체크박스 열 -->
+                        <th>Seller 결제 상태</th>
+                    <th>Seller 결제 요청 일시</th>
+                    <th>Seller 결제 요청</th>
+                    <th>셀러집사 주문상태</th>
+                    <th>주문상태</th>
+                    <th>주문상태변경일시</th>
+                    <th>주문타입변경</th>
+                    <th>주문타입변경일시</th>
+                    <th>클레임타입</th>
+                    <th>클레임상태</th>
+                    <th>취소사유</th>
+                    <th>반품사유</th>
+                    <th>클레임접수일시</th>
+                    <th>반품/교환 설명</th>
+                    <th>Seller ID</th>
+                    <th>쇼핑몰</th>
+                    <th>셀러집사 주문고유코드</th>
+                    <th>쇼핑몰주문번호</th>
+                    <th>쇼핑몰상품주문번호</th>
+                    <th>배송번호</th>
+                    <th>Buyer 주문일(약식)</th>
+                    <th>Buyer 주문일시</th>
+                    <th>Buyer 결제일시</th>
+                    <th>구매자</th>
+                    <th>수령자</th>
+                    <th>개인통관고유부호</th>
+                    <th>통관부호일치여부</th>
+                    <th>개인통관부호검사</th>
+                    <th>수령자전화번호</th>
+                    <th>수령자휴대전화</th>
+                    <th>구매자전화</th>
+                    <th>구매자휴대전화</th>
+                    <th>우편번호</th>
+                    <th>주소</th>
+                    <th>배송메모</th>
+                    <th>Buyer 결제수단</th>
+                    <th>배송방법</th>
+                    <th>배송구분</th>
+                    <th>도서산간</th>
+                    <th>발송예정일</th>
+                    <th>발송일시</th>
+                    <th>송장번호입력일시</th>
+                    <th>송장번호전송일시</th>
+                    <th>택배사</th>
+                    <th>송장번호</th>
+                    <th>송장 전송</th>
+                    <th>쇼핑몰 상품코드</th>
+                    <th>쇼핑몰 링크</th>
+                    <th>셀러집사 상품코드</th>
+                    <th>셀러집사 상품옵션코드</th>
+                    <th>상품명</th>
+                    <th>옵션명</th>
+                    <th>추가구성명</th>
+                    <th>추가구성수량</th>
+                    <th>수량</th>
+                    <th>단가(정가)</th>
+                    <th>옵션추가금액</th>
+                    <th>배송비</th>
+                    <th>총주문금액</th>
+                    <th>할인금액</th>
+                    <th>실결제금액(판매가)</th>
+                    <th>정산예정금액</th>
+                    <th>정산추가정보</th>
+                    <th>상품(옵션) 이미지 url</th>
+                    <th>타오바오 결제일</th>
+                    <th>타오바오 주문번호</th>
+                    <th>타오바오 송장번호</th>
+                    <th>타오바오 주문금액(위안)</th>
+                    <th>타오바오 주문금액(원)</th>
+                    <th>인터로지스 주문번호</th>
+                    <th>인터로지스 신청일시</th>
+                    <th>인터로지스 배송비(1)</th>
+                    <th>인터로지스 배송비(2)</th>
+                    <th>인터로지스 배송비(3)</th>
+                    <th>Seller to Gopher 금액</th>
+                    <th>Seller 결제일(약식)</th>
+                    <th>Seller 결제일시</th>
+                    <th>Seller 결제영수증</th>
+                    <th>고퍼 예상 마진</th>
+                    <th>고퍼 예상 마진률</th>
+                    <th>고퍼 최종 마진</th>
+                    <th>고퍼 최종 마진률</th>
+                    <th>인터로지스 반품 전달건</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 비어있는 2차 테이블 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        // 탭 전환 기능
+        const tab1 = document.getElementById('tab-1');
+        const tab2 = document.getElementById('tab-2');
+        const tab1Content = document.getElementById('tab1-content');
+        const tab2Content = document.getElementById('tab2-content');
+
+        tab1.addEventListener('click', function() {
+            tab1.classList.add('active');
+            tab2.classList.remove('active');
+            tab1Content.style.display = 'block';
+            tab2Content.style.display = 'none';
+        });
+
+        tab2.addEventListener('click', function() {
+            tab2.classList.add('active');
+            tab1.classList.remove('active');
+            tab1Content.style.display = 'none';
+            tab2Content.style.display = 'block';
+        });
+
+        // 열 가시성 토글 기능 (체크박스 열 제외)
+        const toggleButtons = document.querySelectorAll('.toggle-button');
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const column = parseInt(this.getAttribute('data-column')) + 1; // 체크박스 열을 건너뛰기 위해 column+1
+                const cells = document.querySelectorAll(`#order-table-1 tr td:nth-child(${column}), #order-table-1 tr th:nth-child(${column})`);
+                cells.forEach(cell => {
+                    if (cell.style.display === 'none') {
+                        cell.style.display = '';
+                        this.classList.add('active');
+                        this.classList.remove('inactive');
+                    } else {
+                        cell.style.display = 'none';
+                        this.classList.remove('active');
+                        this.classList.add('inactive');
+                    }
+                });
+            });
+        });
+
+        // 필터 버튼 초기 상태 설정
+        window.onload = function() {
+            toggleButtons.forEach(button => button.classList.add('active'));
+        };
+
+        // '알림 발송' 버튼 기능 (선택된 행에 대한 팝업)
+        document.getElementById('notify-button').addEventListener('click', function() {
+            const selectedRows = document.querySelectorAll('#order-table-1 .select-row-1:checked');
+            if (selectedRows.length === 0) {
+                alert('선택된 행이 없습니다.');
+            } else {
+                alert('알림이 선택된 행에 발송되었습니다.');
+            }
+        });
+
+        // '2차 넘기기' 버튼 기능 (선택된 행을 2차 테이블로 이동)
+        document.getElementById('move-button').addEventListener('click', function() {
+            const selectedRows = document.querySelectorAll('#order-table-1 .select-row-1:checked');
+            const tbody2 = document.querySelector('#order-table-2 tbody');
+
+            selectedRows.forEach(row => {
+                const parentRow = row.closest('tr');
+                tbody2.appendChild(parentRow);
+            });
+        });
+
+        // '주문 취소' 버튼 기능 (선택된 행 삭제)
+        document.getElementById('delete-button').addEventListener('click', function() {
+            const selectedRows = document.querySelectorAll('.select-row-1:checked, .select-row-2:checked');
+
+            selectedRows.forEach(row => {
+                const parentRow = row.closest('tr');
+                parentRow.remove();
+            });
+        });
+
+        // 열기/닫기 버튼 기능
+        const toggleMoreBtn = document.getElementById('toggle-more-btn');
+        const toggleButtonsContainer = document.querySelector('.toggle-buttons');
+        toggleMoreBtn.addEventListener('click', function() {
+            toggleButtonsContainer.classList.toggle('expanded');
+            const arrow = this.querySelector('span');
+            arrow.classList.toggle('rotated');
+            if (arrow.classList.contains('rotated')) {
+                this.innerHTML = '접기 <span class="rotated">&#9650;</span>';
+            } else {
+                this.innerHTML = '더보기 <span>&#9660;</span>';
+            }
+        });
+
+        // 1차 테이블 전체 선택 기능
+        const selectAllCheckbox1 = document.getElementById('select-all-1');
+        const rowCheckboxes1 = document.querySelectorAll('.select-row-1');
+        selectAllCheckbox1.addEventListener('change', function() {
+            rowCheckboxes1.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox1.checked;
+            });
+        });
+
+        // 2차 테이블 전체 선택 기능
+        const selectAllCheckbox2 = document.getElementById('select-all-2');
+        const rowCheckboxes2 = document.querySelectorAll('.select-row-2');
+        selectAllCheckbox2.addEventListener('change', function() {
+            rowCheckboxes2.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox2.checked;
+            });
+        });
+
+        // 날짜 필터링 및 검색 기능
+        document.getElementById('search-button').addEventListener('click', function() {
+            const startDate = new Date(document.getElementById('start-date').value);
+            const endDate = new Date(document.getElementById('end-date').value);
+            const rows = document.querySelectorAll('#order-table-1 tbody tr');
+
+            rows.forEach(row => {
+                const dateCell = row.cells[2]; // Seller 결제 요청 일시 열 (3번째 열)
+                const rowDate = new Date(dateCell.innerText.trim()); // 날짜만 추출하여 비교
+                if (rowDate >= startDate && rowDate <= endDate) {
+                    row.style.display = ''; // 날짜 범위에 맞으면 보이게
+                } else {
+                    row.style.display = 'none'; // 범위에 맞지 않으면 숨김
+                }
+            });
+        });
+ // 전체 선택/해제 버튼 기능
+ const selectAllBtn = document.getElementById('select-all-toggle');
+ const deselectAllBtn = document.getElementById('deselect-all-toggle');
+
+ selectAllBtn.addEventListener('click', function() {
+     toggleButtons.forEach(button => {
+         button.classList.add('active');
+         const column = button.getAttribute('data-column');
+         const cells = document.querySelectorAll(`table tr td:nth-child(${column}), table tr th:nth-child(${column})`);
+         cells.forEach(cell => {
+             cell.style.display = '';
+         });
+     });
+     selectAllBtn.classList.add('active');
+     deselectAllBtn.classList.remove('active');
+ });
+
+ deselectAllBtn.addEventListener('click', function() {
+     toggleButtons.forEach(button => {
+         button.classList.remove('active');
+         const column = button.getAttribute('data-column');
+         const cells = document.querySelectorAll(`table tr td:nth-child(${column}), table tr th:nth-child(${column})`);
+         cells.forEach(cell => {
+             cell.style.display = 'none';
+         });
+     });
+     deselectAllBtn.classList.add('active');
+     selectAllBtn.classList.remove('active');
+ });
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Buyer CS 관리</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 기존 스타일 유지 */
+        .question-filter-box {
+            width: 100%;
+            border: 1px solid #E8E8E8;
+            border-radius: 5px;
+            background: #FFF;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        .question-filter-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .question-filter-row label {
+            font-size: 15px;
+            font-weight: 700;
+            color: #424242;
+        }
+
+        .question-filter-row input[type="date"] {
+            padding: 5px 10px;
+            border: 1px solid #E8E8E8;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+
+        /* 문의 상태 버튼 스타일 */
+        .question-status-buttons {
+            display: flex;
+            align-items: center;
+        }
+
+        .question-status-buttons button {
+            display: flex;
+            align-items: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .question-circle {
+            width: 14px;
+            height: 14px;
+            border: 2px solid #808080;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 5px;
+        }
+
+        .question-inner-circle {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: transparent;
+        }
+
+        /* 활성화된 상태 스타일 */
+        .question-status-btn.active .question-circle {
+            border-color: #007AFF;
+        }
+
+        .question-status-btn.active .question-circle .question-inner-circle {
+            background: #007AFF;
+        }
+
+        .question-status-buttons button span {
+            color: #808080;
+            font-size: 12px;
+        }
+
+        /* 필터 액션 버튼 스타일 */
+        .question-filter-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .question-filter-actions button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .question-reset-btn {
+            background: #FFF;
+            border: 1px solid #007AFF;
+            color: #007AFF;
+        }
+
+        .question-search-btn {
+            background: #007AFF;
+            border: none;
+            color: #FFF;
+        }
+
+        /* 문의 카드 스타일 */
+        .question-card {
+            border: 1px solid #E8E8E8;
+            border-radius: 5px;
+            background: #FFF;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .question-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .question-table th, .question-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #E8E8E8;
+        }
+
+        .question-table th {
+            background-color: #F9F9F9;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .question-table tr:hover td {
+            background-color: rgba(245, 249, 255, 0.5);
+        }
+
+        /* 페이지네이션 스타일 */
+        .question-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .question-pagination button {
+            background-color: #FFF;
+            border: 1px solid #E8E8E8;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .question-pagination span {
+            font-size: 18px;
+            padding: 0 10px;
+        }
+
+        /* 팝업 스타일 */
+        .question-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 250px; /* 사이드바 너비만큼 이동 */
+            width: calc(100% - 250px);
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .question-popup-content {
+            background: #FFF;
+            padding: 20px;
+            border-radius: 5px;
+            position: relative;
+            width: 600px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+
+        .question-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            color: #999;
+        }
+
+        /* 팝업 내부 스타일 */
+        .popup-section {
+            margin-bottom: 20px;
+        }
+
+        .popup-section h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            border-bottom: 1px solid #E8E8E8;
+            padding-bottom: 5px;
+        }
+
+        .popup-section div {
+            margin-bottom: 10px;
+        }
+
+        .popup-section label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .popup-section .popup-input {
+            width: 100%;
+            border: 1px solid #E8E8E8;
+            border-radius: 3px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /* 답변 템플릿 버튼 스타일 */
+        .template-buttons {
+            margin-bottom: 10px;
+        }
+
+        .template-buttons button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: 1px solid #007AFF;
+            background-color: #FFF;
+            color: #007AFF;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .template-buttons button:hover {
+            background-color: #007AFF;
+            color: #FFF;
+        }
+
+        /* 답변 발송 버튼 스타일 */
+        .question-btn {
+            padding: 10px 20px;
+            border-radius: 3px;
+            color: #FFF;
+            background-color: #007AFF;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 10px;
+            text-align: center;
+        }
+        /* 새로운 스타일 끝 */
+    </style>
+</head>
+<body>
+
+<!-- 사이드바 -->
+<div class="sidebar">
+    <h4 style="text-align: center;">Admin Page</h4>
+    <a href="user.html" class="nav-link">유저</a>
+    <a href="order.html" class="nav-link">주문통합관리</a>
+    <a href="cs.html" class="nav-link active">Buyer CS</a>
+    <a href="sales.html" class="nav-link">판매/결제</a>
+</div>
+
+<div class="content">
+    <!-- 헤더 -->
+    <div class="header">
+        <h1>Buyer CS 관리</h1>
+    </div>
+
+    <!-- 문의 필터 박스 -->
+    <div class="question-filter-box">
+        <div class="question-filter-row">
+            <label for="question-date-filter">기간</label>
+            <div>
+                <input type="date" id="question-start-date"> ~ <input type="date" id="question-end-date">
+            </div>
+        </div>
+        <div class="question-filter-row">
+            <label>문의 상태</label>
+            <div class="question-status-buttons">
+                <button class="question-status-btn active" data-status="전체">
+                    <div class="question-circle"><div class="question-inner-circle"></div></div>
+                    <span>전체</span>
+                </button>
+                <button class="question-status-btn" data-status="답변">
+                    <div class="question-circle"><div class="question-inner-circle"></div></div>
+                    <span>답변</span>
+                </button>
+                <button class="question-status-btn" data-status="미답변">
+                    <div class="question-circle"><div class="question-inner-circle"></div></div>
+                    <span>미답변</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 필터 액션 버튼 -->
+    <div class="question-filter-actions">
+        <button class="question-reset-btn" onclick="questionResetFilters()">초기화</button>
+        <button class="question-search-btn" onclick="questionApplyFilters()">검색</button>
+    </div>
+
+    <!-- 문의 목록 테이블 -->
+    <div class="question-card">
+        <table class="question-table">
+            <thead>
+                <tr>
+                    <th>작성일</th>
+                    <th>오픈마켓명</th>
+                    <th>오픈마켓 주문번호</th>
+                    <th>셀러집사 주문번호</th>
+                    <th>문의 내역</th>
+                    <th>문의 유형</th>
+                    <th>처리상태</th>
+                    <th>상세보기</th>
+                </tr>
+            </thead>
+            <tbody id="question-inquiry-list">
+                <!-- 예시 데이터 -->
+                <tr>
+                    <td>2024.05.19</td>
+                    <td>오픈마켓A</td>
+                    <td>OM123456</td>
+                    <td>SJ789012</td>
+                    <td>상품 배송이 지연되고 있습니다.</td>
+                    <td>배송 문의</td>
+                    <td>미답변</td>
+                    <td><button class="question-detail-btn">답변쓰기</button></td>
+                </tr>
+                <!-- 추가적인 예시 데이터 -->
+                <tr>
+                    <td>2024.09.25</td>
+                    <td>오픈마켓B</td>
+                    <td>OM654321</td>
+                    <td>SJ210987</td>
+                    <td>상품을 교환하고 싶습니다.</td>
+                    <td>교환 문의</td>
+                    <td>미답변</td>
+                    <td><button class="question-detail-btn">답변쓰기</button></td>
+                </tr>
+                <tr>
+                    <td>2024.09.26</td>
+                    <td>오픈마켓C</td>
+                    <td>OM112233</td>
+                    <td>SJ445566</td>
+                    <td>재고가 있는지 확인 부탁드립니다.</td>
+                    <td>재고 문의</td>
+                    <td>미답변</td>
+                    <td><button class="question-detail-btn">답변쓰기</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div class="question-pagination">
+        <button onclick="questionPrevPage()">&lt;</button>
+        <span id="question-page-info">1 / 1</span>
+        <button onclick="questionNextPage()">&gt;</button>
+    </div>
+
+    <!-- 팝업 창 -->
+    <div class="question-popup" id="question-popup1">
+        <div class="question-popup-content">
+            <span class="question-close" onclick="questionClosePopup('question-popup1')">&times;</span>
+            <h2 id="popup-title">문의 내용 보기/답변</h2>
+
+            <!-- 첫 번째 부분: 문의 정보 -->
+            <div class="popup-section">
+                <h3>문의 정보</h3>
+                <div><label>작성일:</label> <span id="popup-date"></span></div>
+                <div><label>오픈마켓명:</label> <span id="popup-market-name"></span></div>
+                <div><label>오픈마켓 주문번호:</label> <span id="popup-market-order"></span></div>
+                <div><label>셀러집사 주문번호:</label> <span id="popup-seller-order"></span></div>
+            </div>
+
+            <!-- 두 번째 부분: 문의 내역 -->
+            <div class="popup-section">
+                <h3>문의 내역</h3>
+                <div id="popup-inquiry-content"></div>
+            </div>
+
+            <!-- 세 번째 부분: 답변 작성 또는 보기 -->
+            <div class="popup-section" id="popup-reply-section">
+                <h3 id="popup-reply-title">답변 작성</h3>
+                <div class="template-buttons">
+                    <button onclick="insertTemplate('delay')">배송/지연 답변</button>
+                    <button onclick="insertTemplate('exchange')">교환/반품 답변</button>
+                    <button onclick="insertTemplate('restock')">재고/재입고 답변</button>
+                </div>
+                <textarea id="reply-input" rows="5" placeholder="답변을 입력하세요." style="width: 100%;"></textarea>
+                <div class="question-btn" id="popup-reply-btn" onclick="sendReply()">답변 발송</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // 답변 내용 저장을 위한 배열
+    let replyData = {};
+
+    // 상세보기 버튼 클릭 이벤트 설정
+    document.querySelectorAll('.question-detail-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const row = button.closest('tr');
+            const date = row.cells[0].innerText;
+            const marketName = row.cells[1].innerText;
+            const marketOrder = row.cells[2].innerText;
+            const sellerOrder = row.cells[3].innerText;
+            const inquiryContent = row.cells[4].innerText;
+            const status = row.cells[6].innerText;
+
+            const orderId = `${marketOrder}-${sellerOrder}`; // 고유 식별자 생성
+
+            // 팝업에 데이터 채우기
+            document.getElementById('popup-date').innerText = date;
+            document.getElementById('popup-market-name').innerText = marketName;
+            document.getElementById('popup-market-order').innerText = marketOrder;
+            document.getElementById('popup-seller-order').innerText = sellerOrder;
+            document.getElementById('popup-inquiry-content').innerText = inquiryContent;
+
+            if (status === '답변') {
+                document.getElementById('popup-title').innerText = '답변 내역 보기';
+                document.getElementById('popup-reply-title').innerText = '답변 내역';
+                document.getElementById('reply-input').value = replyData[orderId] || '';  // 저장된 답변 내용 표시
+                document.getElementById('popup-reply-section').style.display = 'block';
+                document.getElementById('popup-reply-btn').style.display = 'none';  // 답변 발송 버튼 숨김
+                document.getElementById('reply-input').disabled = true;  // 답변 내용 수정 불가
+            } else {
+                document.getElementById('popup-title').innerText = '문의 내용 보기/답변';
+                document.getElementById('popup-reply-title').innerText = '답변 작성';
+                document.getElementById('popup-reply-section').style.display = 'block';
+                document.getElementById('popup-reply-btn').style.display = 'block';  // 답변 발송 버튼 보임
+                document.getElementById('reply-input').value = '';  // 답변 입력 필드 초기화
+                document.getElementById('reply-input').disabled = false;  // 답변 내용 수정 가능
+            }
+
+            document.getElementById('question-popup1').style.display = 'flex';
+            window.currentRow = row;
+        });
+    });
+
+    // 문의 상태 버튼 클릭 이벤트 설정
+    document.querySelectorAll('.question-status-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            document.querySelectorAll('.question-status-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            questionApplyFilters();
+        });
+    });
+
+    // 팝업 닫기 함수
+    function questionClosePopup(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    // 답변 템플릿 삽입 함수
+    function insertTemplate(type) {
+        let template = '';
+        if (type === 'delay') {
+            template = '고객님, 안녕하세요. 배송이 지연되어 죄송합니다. 최대한 빠르게 발송하겠습니다.';
+        } else if (type === 'exchange') {
+            template = '교환/반품 절차를 안내해드리겠습니다. 번거로우시겠지만 절차에 따라 진행 부탁드립니다.';
+        } else if (type === 'restock') {
+            template = '재고가 곧 입고될 예정입니다. 입고 시 바로 연락드리겠습니다.';
+        }
+        document.getElementById('reply-input').value = template;
+    }
+
+    // 답변 발송 함수
+    function sendReply() {
+        if (confirm('답변을 발송하시겠습니까?')) {
+            const replyContent = document.getElementById('reply-input').value;
+            if (!replyContent) {
+                alert('답변 내용을 입력하세요.');
+                return;
+            }
+
+            // 현재 선택된 행의 주문 번호와 셀러 번호를 결합하여 고유 식별자 생성
+            const orderId = `${window.currentRow.cells[2].innerText}-${window.currentRow.cells[3].innerText}`;
+
+            // 답변 내용을 저장
+            replyData[orderId] = replyContent;
+
+            // 처리상태를 '답변'으로 변경
+            window.currentRow.cells[6].innerText = '답변';
+            window.currentRow.cells[7].querySelector('button').innerText = '답변보기'; // 상세보기 버튼 텍스트 변경
+
+            // 팝업 닫기
+            questionClosePopup('question-popup1');
+        }
+    }
+
+    // 필터 적용 함수
+    function questionApplyFilters() {
+        const startDate = document.getElementById('question-start-date').value;
+        const endDate = document.getElementById('question-end-date').value;
+        const status = document.querySelector('.question-status-btn.active').dataset.status;
+
+        document.querySelectorAll('#question-inquiry-list tr').forEach(row => {
+            const date = row.cells[0].innerText;
+            const statusCell = row.cells[6].innerText;
+
+            let showRow = true;
+
+            // 날짜 필터링
+            if (startDate && endDate) {
+                const rowDate = new Date(date);
+                const filterStartDate = new Date(startDate);
+                const filterEndDate = new Date(endDate);
+                showRow = rowDate >= filterStartDate && rowDate <= filterEndDate;
+            }
+
+            // 상태 필터링
+            if (status !== '전체' && showRow) {
+                showRow = statusCell === status;
+            }
+
+            row.style.display = showRow ? 'table-row' : 'none';
+        });
+
+        questionUpdatePagination();
+    }
+
+    // 필터 초기화 함수
+    function questionResetFilters() {
+        document.getElementById('question-start-date').value = '';
+        document.getElementById('question-end-date').value = '';
+        document.querySelectorAll('.question-status-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector('.question-status-btn[data-status="전체"]').classList.add('active');
+
+        questionApplyFilters();
+    }
+
+    // 페이지네이션 함수
+    function questionUpdatePagination() {
+        const rows = Array.from(document.querySelectorAll('#question-inquiry-list tr'));
+        const rowsPerPage = 10;
+        const totalPages = Math.ceil(rows.filter(row => row.style.display !== 'none').length / rowsPerPage);
+        let currentPage = 1;
+
+        function showPage(page) {
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            let count = 0;
+            rows.forEach(row => {
+                if (row.style.display !== 'none') {
+                    row.style.display = count >= start && count < end ? 'table-row' : 'none';
+                    count++;
+                }
+            });
+            document.getElementById('question-page-info').innerText = `${page} / ${totalPages}`;
+        }
+
+        window.questionNextPage = function() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        };
+
+        window.questionPrevPage = function() {
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        };
+
+        showPage(currentPage);
+    }
+
+    // 페이지 로드 시 초기화
+    window.onload = function() {
+        questionUpdatePagination();
+    };
+</script>
+
+</body>
+</html>
